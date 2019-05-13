@@ -65,7 +65,7 @@ vector<Edge> graph[MAXN];
 int dist[MAXN];
 bool vis[MAXN];
 
-void detect(int u) {
+/* void detect(int u) {
     vis[u] = true;
     for (auto v : graph[u]) {
         if (dist[u] + v.c > dist[v.to]) {
@@ -78,7 +78,7 @@ void detect(int u) {
         }
     }
     vis[u] = false;
-}
+}*/
 
 int main() {
 #ifdef LOCALLL
