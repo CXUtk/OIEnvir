@@ -1,0 +1,95 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <_map>
+#include <set>
+#include <iostream>
+
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 1e9 + 7;
+
+#define scd(x) scanf("%d", &(x))
+#define scd2(x, y) scanf("%d %d", &(x), &(y))
+#define prd(x) printf("%d", (x));
+typedef struct {
+	char name[102];
+	int d;
+	int c;
+} Subject;
+
+#include <_map>
+#include <set>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cstring>
+#include <cmath>
+#include <ctime>
+#include <cstdio>
+#include <queue>
+
+using namespace std;
+
+
+#define ll long long
+
+#define INF 0x3f3f3f3f
+
+
+bool rain[2005];
+int a, n, m;
+int dp[2005][2005];
+int cost[2005];
+pair<int, int> umbra[2005];
+
+int main() {
+
+	scanf("%d %d %d", &a, &n, &m);
+	for (int i = 0; i < n; i++) {
+		int l, r;
+		scanf("%d %d", &l, &r);
+		for (int j = l; j <= r; j++) {
+			rain[j] = true;
+		}
+	}
+	memset(umbra, 0x3f, sizeof(umbra));
+	for (int i = 1; i <= m; i++) {
+		int p, w;
+		scanf("%d %d", &p, &w);
+		umbra[p] = min(umbra[p], pair<int, int>(w, i));
+		cost[i] = w;
+	}
+	memset(dp, 0x3f, sizeof(dp));
+	dp[0][0] = 0;
+	for(int i = 1; i <= a; i++){
+		for(int j = 0; j <= m; j++) {
+			if (dp[i - 1][j] == INF)
+				continue;
+			if (!rain[i - 1]) {
+				dp[i][0] = min(dp[i][0], dp[i][j]);
+			}
+			if(j > 0){
+				dp[i][j] = min(dp[i][j], dp[i - 1][j] + cost[j]);
+			}
+			if(umbra[i].first != INF) {
+				dp[i][umbra[i].second] = min(dp[i][umbra[i].second], dp[i - 1][j] + umbra[i].first);
+			}
+		}
+	}
+	int ans = INF;
+	for(int i = 0; i <= m; i++){
+		ans = min(ans, dp[a][i]);
+	}
+	printf("%d\n", ans);
+	return 0;
+}

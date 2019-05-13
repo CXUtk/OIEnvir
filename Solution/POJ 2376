@@ -1,0 +1,62 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <_map>
+#include <set>
+#include <iostream>
+
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 1e9 + 7;
+
+#define scd(x) scanf("%d", &(x))
+#define scd2(x, y) scanf("%d %d", &(x), &(y))
+#define prd(x) printf("%d", (x));
+typedef struct {
+	char name[102];
+	int d;
+	int c;
+} Subject;
+
+pair<int, int> cow[25005];
+
+int main() {
+	int n, t;
+	scanf("%d %d", &n, &t);
+	for(int i = 1; i <= n; i++){
+		int l, r;
+		scanf("%d %d", &l, &r);
+		cow[i].first = l;
+		cow[i].second = r;
+	}
+	sort(cow + 1, cow + n + 1);
+	int curr = 0;
+	int ans = 0;
+	int i = 1;
+	while(curr < t && i <= n) {
+
+		if(cow[i].first > curr + 1){
+			break;
+		}
+		int maxr = curr;
+		while(cow[i].first <= curr + 1 && i <= n) {
+			maxr = max(maxr, cow[i].second);
+			i++;
+		}
+		ans++;
+		curr = maxr;
+	}
+	if(curr < t)
+		ans = -1;
+	printf("%d\n", ans);
+	return 0;
+}

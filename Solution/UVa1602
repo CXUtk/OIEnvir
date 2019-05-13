@@ -1,0 +1,158 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <map>
+#include <set>
+#include <iostream>
+
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 1e9 + 7;
+
+struct Pos {
+	int r, c;
+	Pos() = default;
+	Pos(int r, int c) : r(r), c(c){}
+	bool operator < (const Pos& rhs) const {
+		return r < rhs.r || (r == rhs.r && c < rhs.c);
+	}
+	bool operator == (const Pos& rhs) const {
+		return r == rhs.r && c == rhs.c;
+	}
+};
+
+int dx[4] = {0, 1, 0, -1};
+int dy[4] = {-1, 0, 1, 0};
+
+int n, w, h;
+
+typedef set<Pos> Polyomino;
+int table[11][11][11];
+set<Polyomino> polys[11];
+
+
+Polyomino normalize(const Polyomino& polyomino){
+	int minR = polyomino.begin()->r;
+	int minC = polyomino.begin()->c;
+	for(auto& pos : polyomino){
+		minR = min(minR, pos.r);
+		minC = min(minC, pos.c);
+	}
+	Polyomino p2;
+	for(auto& pos : polyomino){
+		p2.insert(Pos(pos.r - minR, pos.c - minC));
+	}
+	return p2;
+}
+
+Polyomino rotate(const Polyomino& polyomino){
+	Polyomino p;
+	for(auto& c : polyomino){
+		p.insert(Pos(c.c, -c.r));
+	}
+	return normalize(p);
+}
+
+Polyomino flip(const Polyomino& polyomino){
+	Polyomino p;
+	for(auto& c : polyomino){
+		p.insert(Pos(c.r, -c.c));
+	}
+	return normalize(p);
+}
+
+void checkandinsert(const Polyomino& poly, const Pos& pos){
+	Polyomino p(poly);
+	p.insert(pos);
+	auto p1 = normalize(p);
+
+	int n = p.size();
+	for(int i = 0; i < 4; i++){
+		if(polys[n].count(p1)) return;
+		p1 = rotate(p1);
+	}
+	p1 = flip(p1);
+	for(int i = 0; i < 4; i++){
+		if(polys[n].count(p1)) return;
+		p1 = rotate(p1);
+	}
+	polys[n].insert(p1);
+}
+
+void init(){
+	Polyomino poly;
+	poly.insert(Pos(0, 0));
+	polys[1].insert(poly);
+
+	for(int i = 2; i <= 10; i++){
+		for(auto &p : polys[i - 1]){
+			for(auto &c : p){
+				for(int dir = 0; dir < 4; dir++){
+					Pos newP(c.r + dy[dir], c.c + dx[dir]);
+					if(!p.count(newP)){
+						checkandinsert(p, newP);
+					}
+				}
+			}
+		}
+	}
+
+	for(int i = 2; i <= 10; i++){
+		for(int j = 1; j <= 10; j++){
+			for(int k = 1; k <= 10; k++){
+				int cnt = 0;
+				for(auto& p : polys[i]){
+					int maxR = p.begin()->r;
+					int maxC = p.begin()->c;
+					for(auto& pos : p){
+						maxR = max(maxR, pos.r);
+						maxC = max(maxC, pos.c);
+					}
+					if(min(maxR, maxC) < min(j, k) && max(maxR, maxC) < max(j, k))
+						cnt++;
+				}
+				table[i][j][k] = cnt;
+			}
+		}
+	}
+
+	FILE* f = fopen("test.c", "w+");
+	fprintf(f, "{");
+	for(int i = 1; i <= 10; i++) {
+		for (int j = 1; j <= 10; j++) {
+			for (int k = 1; k <= 10; k++) {
+				if(i == 1){
+					fprintf(f, "1, ");
+				}
+				else{
+					fprintf(f, "%d, ", table[i][j][k]);
+				}
+			}
+		}
+	}
+	fprintf(f, "};\n");
+	fclose(f);
+}
+
+int main() {
+#ifdef LOCALLL
+	freopen("out", "w", stdout);
+#endif
+	init();
+
+	fprintf(stderr, "d\n");
+	while(~scanf("%d %d %d", &n, &w, &h)){
+		if(n == 1){printf("1\n"); continue;}
+		printf("%d\n", table[n][w][h]);
+	}
+	return 0;
+}

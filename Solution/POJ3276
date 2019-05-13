@@ -1,0 +1,75 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <_map>
+#include <set>
+#include <iostream>
+
+using namespace std;
+
+typedef long long ll;
+typedef __int128  l128;
+
+const int INF = 2147483647;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 1e9 + 7;
+
+#define scd(x) scanf("%d", &(x))
+#define scd2(x, y) scanf("%d %d", &(x), &(y))
+#define prd(x) printf("%d", (x));
+
+char a[5003];
+bool d[5003];
+bool f[5003];
+int n;
+
+int check(int k){
+	memset(f, 0, sizeof(f));
+	int sum = 0;
+	int res = 0;
+	for(int i = 0; i + k <= n; i++){
+		if((d[i] + sum) % 2 != 0){
+			res++;
+			f[i] = true;
+		}
+		sum += f[i];
+		if(i - k + 1 >= 0){
+			sum -= f[i - k + 1];
+		}
+	}
+	for(int i = n - k + 1; i < n; i++){
+		if((d[i] + sum) % 2 != 0)
+			return -1;
+		if(i - k + 1 >= 0)
+			sum -= f[i - k + 1];
+	}
+	return res;
+}
+
+int main() {
+
+	scanf("%d", &n);
+	scanf("%s", a);
+	for(int i = 0; i < n; i++){
+		d[i] = a[i] != 'F';
+	}
+	int M = n;
+	int K = -1;
+	for(int i = 1; i <= n; i++){
+		int m = check(i);
+		if(m > 0 && m < M){
+			K = i;
+			M = m;
+		}
+	}
+	if(K < 0)
+		printf("%d\n", -1);
+	else
+		printf("%d %d", K, M);
+	return 0;
+}

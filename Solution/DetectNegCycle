@@ -1,0 +1,28 @@
+bool detect() {
+    queue<int> Q;
+    memset(inque, 0, sizeof(inque));
+    memset(cnt, 0, sizeof(cnt));
+    for (int i = 1; i <= n; i++) {
+        dis[i] = 0;
+        inque[i] = true;
+        Q.push(i);
+    }
+    while (!Q.empty()) {
+        int u = Q.front();
+        Q.pop();
+        inque[u] = false;
+        for (vector<Edge>::iterator it = graph[u].begin(); it != graph[u].end();
+             it++) {
+            Edge e = *it;
+            if (dis[u] + e.dis < dis[e.v]) {
+                dis[e.v] = dis[u] + e.dis;
+                if (!inque[e.v]) {
+                    Q.push(e.v);
+                    inque[e.v] = true;
+                    if (++cnt[e.v] >= n) return true;
+                }
+            }
+        }
+    }
+    return false;
+}

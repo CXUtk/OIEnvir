@@ -1,0 +1,93 @@
+
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <set>
+#include <algorithm>
+#include <cstring>
+#include <iostream>
+#include <sstream>
+
+
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 1e9 + 7;
+
+struct Pos {
+	int x;
+	int y;
+	Pos(int x, int y): x(x), y(y){}
+	bool operator < (const Pos &p) const {
+		return this->x < p.x || (this->x == p.x && this->y < p.y);
+	}
+};
+
+struct Inv {
+	int l;
+	int r;
+	int id;
+	Inv() = default;
+	Inv(int l, int r): l(l), r(r){}
+	bool operator < (const Inv &p) const {
+		return this->r > p.r;
+	}
+};
+
+Inv rowInv[5005];
+Inv colInv[5005];
+int n;
+int targetR[5005];
+int targetC[5005];
+
+bool solve(Inv arrs[], int target[]){
+	priority_queue<Inv> pq;
+	int j = 1;
+	for(int i = 1; i <= n; i++){
+		// If interval contains point at i
+		while (arrs[j].l <= i && i <= arrs[j].r && j <= n)
+			pq.push(arrs[j++]);
+		if(pq.empty())
+			return false;
+		auto p = pq.top();
+		pq.pop();
+		if(p.r < i)
+			return false;
+		target[p.id] = i;
+	}
+	return true;
+}
+
+int main() {
+#ifdef LOCALLL
+	freopen("in", "r", stdin);
+	freopen("out", "w", stdout);
+#endif
+	auto cmp = [](const Inv& a, const Inv& b){
+		return a.l < b.l;
+	};
+	while(scanf("%d", &n) && n){
+		for(int i = 1; i <= n; i++){
+			scanf("%d %d %d %d", &colInv[i].l, &rowInv[i].l, &colInv[i].r, &rowInv[i].r);
+			colInv[i].id = i;
+			rowInv[i].id = i;
+		}
+		sort(colInv + 1, colInv + n + 1, cmp);
+		sort(rowInv + 1, rowInv + n + 1, cmp);
+		if(solve(colInv, targetC) && solve(rowInv, targetR)){
+			for(int i = 1; i <= n; i++){
+				printf("%d %d\n", targetC[i], targetR[i]);
+			}
+		}
+		else{
+			printf("IMPOSSIBLE \n");
+		}
+	}
+	return 0;
+}
+

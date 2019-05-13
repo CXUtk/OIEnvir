@@ -1,0 +1,85 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <_map>
+#include <set>
+#include <iostream>
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 0x3f3f3f3f;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const int MOD = 998244353;
+
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+
+struct Platform{
+	int x1, x2, h;
+};
+int n, x, y, M;
+int dp[1003][2];
+Platform platforms[1003];
+
+int solve(int k, int xx){
+	if(dp[k][xx] != INF)
+		return dp[k][xx];
+	Platform p = platforms[k];
+	int realX = p.x2;
+	if(xx == 0)
+		realX = p.x1;
+
+	int nextK1 = 0;
+	for(int i = 1; i <= n; i++){
+		if(platforms[i].x1 <= realX && realX <= platforms[i].x2 && p.h > platforms[i].h){
+			nextK1 = i;
+			break;
+		}
+	}
+
+	int nextK2 = 0;
+	for(int i = 1; i <= n; i++){
+		if(platforms[i].x1 <= realX && realX <= platforms[i].x2 && p.h > platforms[i].h){
+			nextK2 = i;
+			break;
+		}
+	}
+	int minT = INF;
+	if(p.h - platforms[nextK1].h <= M && nextK1 != 0)
+		minT = min(minT, solve(nextK1, 0) + abs(realX - platforms[nextK1].x1) + p.h - platforms[nextK1].h);
+	else if(nextK1 == 0 && p.h <= M)
+		minT = min(minT, p.h);
+
+	if(p.h - platforms[nextK2].h <= M && nextK2 != 0)
+		minT = min(minT, solve(nextK2, 1) + abs(realX - platforms[nextK1].x2) + p.h - platforms[nextK2].h);
+	else if(nextK2 == 0 && p.h <= M)
+		minT = min(minT, p.h);
+
+	return dp[k][xx] = minT;
+}
+bool cmp(Platform& a, Platform& b){
+	return a.h > b.h;
+}
+int main() {
+	int t;
+	scanf("%d", &t);
+	for(int i = 0; i < t; i++){
+
+		scanf("%d %d %d %d", &n, &x, &y, &M);
+		for(int j = 1; j <= n; j++){
+			scanf("%d %d %d", &platforms[j].x1, &platforms[j].x2, &platforms[j].h);
+		}
+		memset(dp, 0x3f, sizeof(dp));
+		platforms[0].x1 = platforms[0].x2 = x;
+		platforms[0].h = y;
+		sort(platforms + 1, platforms + n + 1, cmp);
+		int ans = solve(0, 0);
+		printf("%d\n", ans);
+	}
+	return 0;
+}

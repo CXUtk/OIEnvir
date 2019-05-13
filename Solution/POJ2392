@@ -1,0 +1,80 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <_map>
+#include <set>
+#include <iostream>
+
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 1e9 + 7;
+
+#define scd(x) scanf("%d", &(x))
+#define scd2(x, y) scanf("%d %d", &(x), &(y))
+#define prd(x) printf("%d", (x));
+typedef struct {
+	int h;
+	int c;
+	int a;
+} Block;
+
+bool cmp(Block& b1, Block& b2){
+	return b1.a < b2.a;
+}
+
+Block blocks[405];
+bool dp[40005];
+vector<Block> decomp;
+int main() {
+	int k;
+	scanf("%d", &k);
+	int maxh = 0;
+
+	for(int i = 1; i <= k; i++) {
+		scanf("%d %d %d", &blocks[i].h, &blocks[i].a, &blocks[i].c);
+		int q = 1;
+		int amt = blocks[i].c;
+		maxh = max(maxh, blocks[i].a);
+		while(amt - q >= 0){
+			Block b;
+			b.c = 1;
+			b.a = blocks[i].a;
+			b.h = q * blocks[i].h;
+			decomp.push_back(b);
+			amt -= q;
+			q *= 2;
+		}
+		if(amt > 0) {
+			Block b;
+			b.c = 1;
+			b.a = blocks[i].a;
+			b.h = amt * blocks[i].h;
+			decomp.push_back(b);
+		}
+
+	}
+
+	sort(decomp.begin(), decomp.end(), cmp);
+	dp[0] = true;
+	int maxx = 0;
+	for(int i = 0; i < decomp.size(); i++){
+		for(int j = maxh; j >= decomp[i].h; j--) {
+			if (decomp[i].a >= j && dp[j - decomp[i].h]) {
+				dp[j] = true;
+				maxx = max(maxx, j);
+			}
+		}
+	}
+
+	printf("%d", maxx);
+	return 0;
+}

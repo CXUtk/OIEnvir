@@ -1,0 +1,67 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <_map>
+#include <set>
+#include <iostream>
+
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 1e9 + 7;
+
+#define scd(x) scanf("%d", &(x))
+#define scd2(x, y) scanf("%d %d", &(x), &(y))
+#define prd(x) printf("%d", (x));
+typedef struct {
+	int h;
+	int c;
+	int a;
+} Block;
+
+bool cmp(Block& b1, Block& b2){
+	return b1.a < b2.a;
+}
+int si[103];
+int fi[103];
+const int N = 2000 * 100 + 5;
+const int shift = 100001;
+int dp[N];
+int tf[N];
+int main() {
+	int n;
+	int sum = 0;
+	scanf("%d", &n);
+	for(int i = 1; i <= n; i++) {
+		scanf("%d %d", &si[i], &fi[i]);
+		si[i] += 1000;
+		sum += si[i];
+	}
+	memset(dp, -0x3f, sizeof(dp));
+	dp[0] = 0;
+	for(int i = 1; i <= n; i++){
+		for(int j = sum; j >= si[i]; j--){
+			int v = dp[j - si[i]] + si[i] - 1000 + fi[i];
+			if(v > dp[j]){
+				dp[j] = v;
+				tf[j] = tf[j - si[i]] + fi[i];
+			}
+		}
+	}
+	int ans = 0;
+	for(int i = 0; i <= sum; i++){
+		if(dp[i] > 0 && tf[i] > 0 && dp[i] - tf[i] > 0){
+			ans = max(ans, dp[i]);
+		}
+	}
+	printf("%d", ans);
+	return 0;
+}

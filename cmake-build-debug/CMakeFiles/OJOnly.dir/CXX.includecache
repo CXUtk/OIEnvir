@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/DELL/Documents/ACM/OJOnly/main.cpp
+algorithm
+-
+bitset
+-
+cmath
+-
+cstdio
+-
+cstring
+-
+iostream
+-
+list
+-
+map
+-
+queue
+-
+set
+-
+stack
+-
+vector
+-
+

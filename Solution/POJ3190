@@ -1,0 +1,72 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <map>
+#include <set>
+#include <iostream>
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const int MOD = 998244353;
+
+int dx[4] = {1, -1, 0, 0};
+int dy[4] = {0, 0, 1, -1};
+
+struct Cow{
+	int l, r, m;
+
+};
+
+bool operator <(const Cow& a, const Cow& b){
+	return a.r > b.r;
+}
+
+Cow intervals[50005];
+int mark[50005];
+
+bool cmp(const Cow& a, const Cow& b){
+	if(a.l == b.l){
+		return a.r < b.r;
+	}
+	return a.l < b.l;
+}
+
+int main() {
+	int n;
+	scanf("%d", &n);
+	for(int i = 0; i < n; i++){
+		scanf("%d %d", &intervals[i].l, &intervals[i].r);
+		intervals[i].m = i;
+	}
+	sort(intervals, intervals + n, cmp);
+
+	priority_queue<Cow> pq;
+	pq.push(intervals[0]);
+	mark[intervals[0].m] = 1;
+	int k = 1;
+	int S = 1;
+	while(k < n){
+		Cow cow = pq.top();
+		if(cow.r >= intervals[k].l){
+			mark[intervals[k].m] = ++S;
+		}
+		else{
+			mark[intervals[k].m] = mark[cow.m];
+			pq.pop();
+		}
+		pq.push(intervals[k]);
+		k++;
+	}
+	printf("%d\n", *max_element(mark, mark +n));
+	for(int i = 0; i < n; i++){
+		printf("%d\n", mark[i]);
+	}
+	return 0;
+}

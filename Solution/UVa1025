@@ -1,0 +1,118 @@
+
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <set>
+#include <map>
+#include <algorithm>
+#include <cstring>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <functional>
+
+
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const int INF2 = 0x3f3f3f3f;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 1e9 + 7;
+
+struct Pos {
+	int x;
+	int y;
+	Pos() : x(0), y(0) {}
+	Pos(int x, int y) : x(x), y(y) {}
+};
+
+
+inline int read() {
+	int X = 0, w = 0;
+	char ch = 0;
+	while (!isdigit(ch)) {
+		w |= ch == '-';
+		ch = getchar();
+	}
+	while (isdigit(ch)) X = (X << 3) + (X << 1) + (ch ^ 48), ch = getchar();
+	return w ? -X : X;
+}
+
+int tstation[53];
+int d[53];
+int e[53];
+int n, t;
+int m1, m2;
+int dp[201][53];
+bool hasTrainL[201][53];
+bool hasTrainR[201][53];
+
+
+int main() {
+#ifdef LOCALLL
+	freopen("in", "r", stdin);
+	freopen("out", "w", stdout);
+#endif
+	scanf("%d", &n);
+	printf("%d", n);
+	int CASE = 1;
+	while(scanf("%d", &n) && n) {
+		scanf("%d", &t);
+		for (int i = 1; i <= n - 1; i++) {
+			tstation[i] = read();
+		}
+		scanf("%d", &m1);
+		for (int i = 0; i < m1; i++) {
+			d[i] = read();
+		}
+		scanf("%d", &m2);
+		for (int i = 0; i < m2; i++) {
+			e[i] = read();
+		}
+		for(int i = 0; i < m1; i++){
+			int sum = 0;
+			for(int j = 1; j <= n; j++) {
+				hasTrainL[d[i] + sum][j] = true;
+				if(j < n)
+					sum += tstation[j];
+			}
+		}
+		for(int i = 0; i < m2; i++){
+			int sum = 0;
+			for(int j = n; j >= 1; j--) {
+				hasTrainR[e[i] + sum][j] = true;
+				if(j > 1)
+					sum += tstation[j - 1];
+			}
+		}
+		memset(dp, 0x3f, sizeof(dp));
+		dp[t][n] = 0;
+		for(int i = t - 1; i >= 0; i--){
+			for(int j = 1; j <= n; j++){
+				dp[i][j] = dp[i + 1][j] + 1;
+				if(j < n){
+					if(hasTrainL[i][j] && i + tstation[j] <= t) {
+						dp[i][j] = min(dp[i][j], dp[i + tstation[j]][j + 1]);
+					}
+				}
+				if(j > 1){
+					if(hasTrainR[i][j] && i + tstation[j - 1] <= t) {
+						dp[i][j] = min(dp[i][j], dp[i + tstation[j - 1]][j - 1]);
+					}
+				}
+			}
+		}
+		if(dp[0][1] >= INF2)
+			printf("Case Number %d: %s\n", CASE++, "impossible");
+		else
+			printf("Case Number %d: %d\n", CASE++, dp[0][1]);
+		memset(hasTrainR, 0, sizeof(hasTrainR));
+		memset(hasTrainL, 0, sizeof(hasTrainL));
+	}
+	return 0;
+}
+

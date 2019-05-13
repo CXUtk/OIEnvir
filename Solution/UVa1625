@@ -1,0 +1,104 @@
+
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <set>
+#include <map>
+#include <algorithm>
+#include <cstring>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <functional>
+#include <stack>
+
+
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const int INF2 = 0x3f3f3f3f;
+const ll INF64 = 1e18;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const ll MOD = 998244353  ;
+
+struct Pos {
+	int x;
+	int y;
+	Pos() : x(0), y(0) {}
+	Pos(int x, int y) : x(x), y(y) {}
+};
+
+
+inline int read() {
+	int X = 0, w = 0;
+	char ch = 0;
+	while (!isdigit(ch)) {
+		w |= ch == '-';
+		ch = getchar();
+	}
+	while (isdigit(ch)) X = (X << 3) + (X << 1) + (ch ^ 48), ch = getchar();
+	return w ? -X : X;
+}
+
+int n, m;
+char a[5003];
+char b[5003];
+int dp[2][5003];
+int c[2][5003];
+int sm[26], sn[26], em[26], en[26];
+int main() {
+#ifdef LOCALLL
+	freopen("in", "r", stdin);
+	freopen("out", "w", stdout);
+#endif
+	int T;
+	scanf("%d", &T);
+	while(T--){
+		scanf("%s", a + 1);
+		scanf("%s", b + 1);
+		m = strlen(a + 1);
+		n = strlen(b + 1);
+		for(int i = 1; i <= m; i++) a[i] -= 'A';
+		for(int i = 1; i <= n; i++) b[i] -= 'A';
+
+		// calculate s and e
+		for(int i = 0; i < 26; i++) { sm[i] = sn[i] = INF2; em[i] = en[i] = 0; }
+		for(int i = 1; i <= m; i++) {
+			sm[a[i]] = min(sm[a[i]], i);
+			em[a[i]] = i;
+		}
+		for(int i = 1; i <= n; i++) {
+			sn[b[i]] = min(sn[b[i]], i);
+			en[b[i]] = i;
+		}
+		int t =0;
+		memset(dp, 0, sizeof(dp));
+		memset(c, 0, sizeof(c));
+		for(int i = 0; i <= m; i++){
+			for(int j = 0; j <= n; j++){
+				if(!i && !j) continue;
+				int v1 = INF2, v2 = INF2;
+				if(i) v1 = dp[t ^ 1][j] + c[t ^ 1][j];
+				if(j) v2 = dp[t][j - 1] + c[t][j - 1];
+				dp[t][j] = min(v1, v2);
+				if(i){
+					c[t][j] = c[t ^ 1][j];
+					if(sm[a[i]] == i && sn[a[i]] > j) c[t][j]++;
+					if(em[a[i]] == i && en[a[i]] <= j) c[t][j]--;
+				}
+				else {
+					c[t][j] = c[t][j - 1];
+					if(sn[b[j]] == j && sm[b[j]] > i) c[t][j]++;
+					if(en[b[j]] == j && em[b[j]] <= i) c[t][j]--;
+				}
+			}
+			t ^= 1;
+		}
+		printf("%d\n", dp[t ^ 1][n]);
+	}
+	return 0;
+}
+

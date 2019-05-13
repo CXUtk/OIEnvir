@@ -1,0 +1,96 @@
+#include <cstring>
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <map>
+#include <set>
+using namespace std;
+
+typedef long long ll;
+
+const int INF = 2147483647;
+const double EPS = 1e-15;
+const double PI = 3.1415926;
+const int MOD = 998244353;
+
+int dr[4] = {-1, 0, 1, 0};
+int dc[4] = {0, 1, 0, -1};
+
+char wordTmp[1003];
+int n;
+set<int> graph[256];
+int fanin[256];
+int fanout[256];
+bool vis[256];
+
+void dfs(int u, int p){
+	vis[u] = true;
+	for(auto a : graph[u]){
+		if(!vis[a] && a != p)
+			dfs(a, u);
+	}
+}
+int main() {
+	int T;
+	scanf("%d", &T);
+	for(int i = 0; i < T; i++){
+		scanf("%d", &n);
+		memset(fanin, 0, sizeof(fanin));
+		memset(fanout, 0, sizeof(fanout));
+		memset(vis, 0, sizeof(vis));
+		for(int j = 'a'; j <= 'z'; j++){
+			graph[j].clear();
+		}
+		for(int j = 1; j <= n; j++){
+			scanf("%s", wordTmp);
+			int len = strlen(wordTmp);
+			graph[wordTmp[0]].insert(wordTmp[len - 1]);
+			graph[wordTmp[len - 1]].insert(wordTmp[0]);
+			fanout[wordTmp[0]]++;
+			fanin[wordTmp[len - 1]]++;
+		}
+		for(int j = 'a'; j <= 'z'; j++) {
+			if(fanout[j] || fanin[j]) {
+				dfs(j, 0);
+				break;
+			}
+		}
+		bool noans = false;
+		for(int j = 'a'; j <= 'z'; j++){
+			if((fanout[j] || fanin[j]) && !vis[j]) {
+				noans = true;
+				break;
+			}
+		}
+		if(noans){
+			printf("The door cannot be opened.\n");
+			continue;
+		}
+		int bal = 0;
+		int cnt = 0;
+		for(int j = 'a'; j <= 'z'; j++){
+			if((fanout[j] || fanin[j])) {
+				if(fanout[j] != fanin[j]) {
+					bal += fanout[j] - fanin[j];
+					cnt++;
+					if(abs(bal) > 1 || cnt > 2){
+						noans = true;
+						break;
+					}
+				}
+			}
+		}
+		if(cnt == 2 && bal != 0)
+			noans = true;
+		if(noans){
+			printf("The door cannot be opened.\n");
+			continue;
+		}
+		else{
+			printf("Ordering is possible.\n");
+		}
+	}
+	return 0;
+}

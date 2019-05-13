@@ -1,0 +1,27 @@
+void dijkstra() {
+    priority_queue<Edge> pq;
+    pq.push({1, 0, 0});
+    dist[1] = 0;
+    cost[1] = 0;
+    while (!pq.empty()) {
+        Edge e = pq.top();
+        pq.pop();
+        if (vis[e.to]) continue;
+        vis[e.to] = true;
+        for (auto& u : graph[e.to]) {
+            if (dist[e.to] + u.dis <= dist[u.to]) {
+                if (dist[e.to] + u.dis < dist[u.to]) {
+                    dist[u.to] = dist[e.to] + u.dis;
+                    pre[u.to] = &u;
+                } else {
+                    if (pre[u.to]->cost > u.cost) {
+                        pre[u.to] = &u;
+                    }
+                }
+                if (!vis[u.to]) {
+                    pq.push({u.to, dist[u.to], cost[u.to]});
+                }
+            }
+        }
+    }
+}
